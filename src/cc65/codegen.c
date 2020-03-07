@@ -3649,10 +3649,6 @@ void g_com (unsigned Flags)
 void g_inc (unsigned flags, unsigned long val)
 /* Increment the primary register by a given number */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     /* Don't inc by zero */
     if (val == 0) {
         return;
@@ -3664,6 +3660,11 @@ void g_inc (unsigned flags, unsigned long val)
 
         case CF_CHAR:
             if (flags & CF_FORCECHAR) {
+                if (CPU == CPU_65816) {
+                    assert(0);
+                    break;
+                }
+
                 if ((CPUIsets[CPU] & CPU_ISET_65SC02) != 0 && val <= 2) {
                     while (val--) {
                         AddCodeLine ("ina");
@@ -3677,6 +3678,12 @@ void g_inc (unsigned flags, unsigned long val)
             /* FALLTHROUGH */
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                AddCodeLine("sec");
+                AddCodeLine("adc #$%04x", (uint16_t)(val - 1));
+                break;
+            }
+
             if ((CPUIsets[CPU] & CPU_ISET_65SC02) != 0 && val == 1) {
                 unsigned L = GetLocalLabel();
                 AddCodeLine ("ina");
@@ -3733,6 +3740,11 @@ void g_inc (unsigned flags, unsigned long val)
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (val <= 255) {
                 AddCodeLine ("ldy #$%02X", (unsigned char) val);
                 AddCodeLine ("jsr inceaxy");
