@@ -38,3 +38,15 @@ including
 
 The libraries are fairly portable, so creating a version for other 6502s
 shouldn't be too much work.
+
+# 65816
+
+## Calling Convention
+
+Parameters on stack in left-to-right order (first argument is pushed first), the last argument goes into the A register.
+
+`char` is promoted to 16-bit on-stack and in registers but operations are still 8-bit
+
+The return value is in `A`
+
+The caller has to cleanup the arguments
