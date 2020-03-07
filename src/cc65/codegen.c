@@ -728,7 +728,8 @@ void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
                     AddCodeLine("lda #$%04X", (uint16_t) Val);
                     break;
                 case CF_LONG:
-                    assert(0);
+                    AddCodeLine("ldx #$%04x", (uint16_t)(Val >> 16));
+                    AddCodeLine("lda #$%04x", (uint16_t)(Val & 0xFF));
                     break;
                 default:
                     typeerror (Flags);
@@ -920,7 +921,11 @@ void g_getlocal (unsigned Flags, int Offs)
                 AddCodeLine("lda $%02X,s", Offs + 1);
                 break;
             case CF_LONG:
-                assert(0);
+                CheckLocalOffs(Offs);
+                assert((Offs + 2 >= 0) && (Offs + 2 <= 256));
+                AddCodeLine("lda $%02X,s", Offs + 2);
+                AddCodeLine("tax");
+                AddCodeLine("lda $%02X,s", Offs + 1);
                 break;
             default:
                 typeerror(Flags);
@@ -2592,7 +2597,8 @@ void g_push (unsigned flags, unsigned long val)
                     AddCodeLine("pha");
                     break;
                 case CF_LONG:
-                    assert(0);
+                    AddCodeLine("phx");
+                    AddCodeLine("pha");
                     break;
                 default:
                     typeerror(flags);

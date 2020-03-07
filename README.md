@@ -50,3 +50,7 @@ Parameters on stack in left-to-right order (first argument is pushed first), the
 The return value is in `A`
 
 The caller has to cleanup the arguments
+
+## long (32 bit)
+
+values of long are stored in A/X
