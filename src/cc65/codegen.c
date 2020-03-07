@@ -1313,14 +1313,19 @@ void g_putlocal (unsigned Flags, int Offs, long Val)
             break;
 
         case CF_LONG:
-            if (CPU == CPU_65816) {
-                assert(0);
-                break;
-            }
-
             if (Flags & CF_CONST) {
                 g_getimmed (Flags, Val, 0);
             }
+
+            if (CPU == CPU_65816) {
+                AddCodeLine("sta $%02x,s", Offs + 1);
+                AddCodeLine("pha"); /* XXX: offs += 2 */
+                AddCodeLine("txa");
+                AddCodeLine("sta $%02x,s", Offs + 1 + 2 + 2);
+                AddCodeLine("pla"); /* cleanup stack */
+                break;
+            }
+
             AddCodeLine ("ldy #$%02X", Offs);
             AddCodeLine ("jsr steaxysp");
             break;
