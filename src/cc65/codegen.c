@@ -471,7 +471,13 @@ void g_enter (unsigned flags, unsigned argsize)
 /* Function prologue */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        if ((flags & CF_FIXARGC) != 0) {
+            assert(0);
+        } else {
+            funcargs = -1;
+        }
+
+        return;
     }
 
     if ((flags & CF_FIXARGC) != 0) {
@@ -489,7 +495,16 @@ void g_leave (void)
 /* Function epilogue */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        unsigned int todrop = (unsigned) -StackPtr;
+
+        assert(funcargs == -1);
+
+        if (StackPtr != 0) {
+            g_drop(todrop);
+        }
+
+        AddCodeLine("rts");
+        return;
     }
 
     /* How many bytes of locals do we have to drop? */
