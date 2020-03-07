@@ -2645,7 +2645,19 @@ void g_drop (unsigned Space)
 /* Drop space allocated on the stack */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        if (Space % 2 == 1) {
+            /* make space 2-byte aligned */
+            AddCodeLine("phb");
+            Space += 1;
+        }
+
+        /* TODO: implement more efficiently for large @Space */
+        for (int i = 0; i < Space; i += 2) {
+            /* XXX: assumes that Y is unimportant */
+            AddCodeLine("ply");
+        }
+
+        return;
     }
 
     if (Space > 255) {
