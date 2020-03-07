@@ -1955,10 +1955,6 @@ void g_addeqstatic (unsigned flags, uintptr_t label, long offs,
 void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
 /* Emit += for a local variable */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     /* Calculate the true offset, check it, load it into Y */
     Offs -= StackPtr;
     CheckLocalOffs (Offs);
@@ -1967,6 +1963,10 @@ void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
+            if (CPU == CPU_65816) {
+                assert(0);
+            }
+
             if (flags & CF_FORCECHAR) {
                 AddCodeLine ("ldy #$%02X", Offs);
                 AddCodeLine ("ldx #$00");
@@ -1991,6 +1991,16 @@ void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
             /* FALLTHROUGH */
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                if (flags & CF_CONST) {
+                    g_getimmed(flags, val, 0);
+                }
+                AddCodeLine("clc");
+                AddCodeLine("adc $%02x,s", Offs + 1);
+                AddCodeLine("sta $%02x,s", Offs + 1);
+                break;
+            }
+
             AddCodeLine ("ldy #$%02X", Offs);
             if (flags & CF_CONST) {
                 if (IS_Get (&CodeSizeFactor) >= 400) {
@@ -2015,6 +2025,11 @@ void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (flags & CF_CONST) {
                 g_getimmed (flags, val, 0);
             }
