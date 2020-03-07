@@ -472,7 +472,7 @@ void g_enter (unsigned flags, unsigned argsize)
 {
     if (CPU == CPU_65816) {
         if ((flags & CF_FIXARGC) != 0) {
-            assert(0);
+            funcargs = argsize;
         } else {
             funcargs = -1;
         }
@@ -496,8 +496,6 @@ void g_leave (void)
 {
     if (CPU == CPU_65816) {
         unsigned int todrop = (unsigned) -StackPtr;
-
-        assert(funcargs == -1);
 
         if (StackPtr != 0) {
             g_drop(todrop);
