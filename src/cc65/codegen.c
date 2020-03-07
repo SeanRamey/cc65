@@ -984,10 +984,6 @@ void g_getind (unsigned Flags, unsigned Offs)
 ** into the primary register
 */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     /* If the offset is greater than 255, add the part that is > 255 to
     ** the primary. This way we get an easy addition and use the low byte
     ** as the offset
@@ -998,6 +994,24 @@ void g_getind (unsigned Flags, unsigned Offs)
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
+            if (CPU == CPU_65816) {
+                AddCodeLine("pha");
+                AddCodeLine("ldy #$%04x", Offs);
+                AddCodeLine("lda ($1,s),y");
+                AddCodeLine("ply"); /* cleanup stack */
+                AddCodeLine("and #$00ff");
+
+                if ((Flags & CF_UNSIGNED) == 0) {
+                    /* sign-extend */
+                    unsigned int l = GetLocalLabel();
+                    AddCodeLine("cmp #$80");
+                    AddCodeLine("bcc %s", LocalLabelName(l));
+                    AddCodeLine("eor #$ff00");
+                    g_defcodelabel(l);
+                }
+                break;
+            }
+
             /* Character sized */
             AddCodeLine ("ldy #$%02X", Offs);
             if (Flags & CF_UNSIGNED) {
@@ -1008,6 +1022,11 @@ void g_getind (unsigned Flags, unsigned Offs)
             break;
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (Flags & CF_TEST) {
                 AddCodeLine ("ldy #$%02X", Offs);
                 AddCodeLine ("sta ptr1");
@@ -1022,6 +1041,11 @@ void g_getind (unsigned Flags, unsigned Offs)
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             AddCodeLine ("ldy #$%02X", Offs+3);
             AddCodeLine ("jsr ldeaxidx");
             if (Flags & CF_TEST) {
