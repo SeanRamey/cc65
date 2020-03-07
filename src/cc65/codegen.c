@@ -2900,7 +2900,7 @@ void g_add (unsigned flags, unsigned long val)
                 break;
             case CF_INT:
                 AddCodeLine("clc");
-                AddCodeLine("adc #$1,s");
+                AddCodeLine("adc $1,s");
                 AddCodeLine("ply"); /* cleanup stack */
                 pop(CF_INT);
                 break;
