@@ -893,7 +893,42 @@ void g_getlocal (unsigned Flags, int Offs)
 /* Fetch specified local object (local var). */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        Offs -= StackPtr;
+        switch (Flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                CheckLocalOffs (Offs);
+                assert((Offs + 1 >= 0) && (Offs + 1 <= 256));
+                if ((Flags & CF_FORCECHAR) || (Flags & CF_TEST)) {
+                    AddCodeLine("lda $%02x,s", Offs + 1);
+                    AddCodeLine("and #$00ff");
+                } else {
+                    AddCodeLine("lda $%02x,s", Offs + 1);
+
+                    if ((Flags & CF_UNSIGNED) == 0) {
+                        /* sign-extend */
+                        unsigned int l = GetLocalLabel();
+                        AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
+                        AddCodeLine("bpl %s", LocalLabelName (l));
+                        AddCodeLine("eor #$FF00"); /* sign extend if necessary */
+                        g_defcodelabel(l);
+                    }
+                }
+
+                break;
+            case CF_INT:
+                CheckLocalOffs (Offs);
+                assert((Offs + 1 >= 0) && (Offs + 1 <= 256));
+                AddCodeLine("lda $%02X,s", Offs + 1);
+                break;
+            case CF_LONG:
+                assert(0);
+                break;
+            default:
+                typeerror(Flags);
+                break;
+        }
+
+        return;
     }
 
     Offs -= StackPtr;
