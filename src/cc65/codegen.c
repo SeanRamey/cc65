@@ -711,8 +711,37 @@ void g_restore_regvars (int StackOffs, int RegOffs, unsigned Bytes)
 void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
 /* Load a constant into the primary register */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
+    if (CPU_65816 == CPU_65816) {
+
+        if ((Flags & CF_CONST) != 0) {
+            /* numeric constant */
+
+            switch (Flags & CF_TYPEMASK) {
+                case CF_CHAR:
+                    if ((Flags & CF_FORCECHAR) != 0) {
+                        AddCodeLine("lda #$%04x", (uint16_t)(Val & 0xFF));
+                        break;
+                    }
+
+                    /* fall-through*/
+                    ;;
+                case CF_INT:
+                    AddCodeLine("lda #$%04X", (uint16_t) Val);
+                    break;
+                case CF_LONG:
+                    assert(0);
+                    break;
+                default:
+                    typeerror (Flags);
+                    break;
+            }
+        } else {
+            /* label */
+            const char *label = GetLabelName(Flags, Val, Offs);
+            AddCodeLine("lda #%s", label);
+        }
+
+        return;
     }
 
     unsigned char B1, B2, B3, B4;
