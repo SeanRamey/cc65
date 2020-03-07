@@ -2714,7 +2714,26 @@ void g_space (int Space)
 /* Create or drop space on the stack */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        if (Space < 0) {
+            /* this is actually a drop operation */
+            g_drop(-Space);
+        } else if (Space > 16) {
+            /* TODO: implement an add operation on the stack pointer
+             * since it will be cheaper if @Space is large */
+            assert(0);
+        } else if (Space != 0) {
+            if (Space % 2 == 1) {
+                AddCodeLine("phb");
+                Space -= 1;
+            }
+
+            for (int i = 0; i < Space; i += 2) {
+                /* simply push garbage */
+                AddCodeLine("pha");
+            }
+        }
+
+        return;
     }
 
     if (Space < 0) {
