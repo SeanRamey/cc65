@@ -1382,6 +1382,13 @@ static FuncDesc* ParseFuncDecl (void)
         } else {
             Sym->V.Offs = Offs;
         }
+
+        if (CPU == CPU_65816) {
+            /* 8-bit values are actually 16-bit values on stack */
+            if (Size == 1) {
+                Size = 2;
+            }
+        }
         Offs += Size;
         F->ParamSize += Size;
         Sym = Sym->PrevSym;
