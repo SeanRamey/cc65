@@ -316,21 +316,45 @@ static CodeEntry* ParseInsn (CodeSeg* S, LineInfo* LI, const char* L)
             if (*L == ',') {
                 /* Expect zp x indirect */
                 L = SkipSpace (L+1);
-                if (toupper (*L) != 'X') {
-                    Error ("ASM code error: 'X' expected");
+                if (toupper(*L) == 'X') {
+                    L = SkipSpace (L+1);
+                    if (*L != ')') {
+                        Error ("ASM code error: ')' expected");
+                        return 0;
+                    }
+                    L = SkipSpace (L+1);
+                    if (*L != '\0') {
+                        Error ("ASM code error: syntax error");
+                        return 0;
+                    }
+                    AM = AM65_ZPX_IND;
+
+                } else if (toupper(*L) == 'S') {
+                    L = SkipSpace(L + 1);
+                    if (*L != ')') {
+                        Error ("ASM code error: ')' expected");
+                        return 0;
+                    }
+                    L = SkipSpace(L + 1);
+                    if (*L != ',') {
+                        Error("ASM code error: ',' expected");
+                        return 0;
+                    }
+                    L = SkipSpace(L + 1);
+                    if (toupper(*L) != 'Y') {
+                        Error("ASM code error: 'Y' expected");
+                        return 0;
+                    }
+                    L = SkipSpace(L + 1);
+                    if (*L != '\0') {
+                        Error ("ASM code error: syntax error");
+                        return 0;
+                    }
+                    AM = AM65816_STACKY;
+                } else {
+                    Error("ASM code error: 'X' or 'S' expected");
                     return 0;
                 }
-                L = SkipSpace (L+1);
-                if (*L != ')') {
-                    Error ("ASM code error: ')' expected");
-                    return 0;
-                }
-                L = SkipSpace (L+1);
-                if (*L != '\0') {
-                    Error ("ASM code error: syntax error");
-                    return 0;
-                }
-                AM = AM65_ZPX_IND;
             } else if (*L == ')') {
                 /* zp indirect or zp indirect, y */
                 L = SkipSpace (L+1);
@@ -400,6 +424,9 @@ static CodeEntry* ParseInsn (CodeSeg* S, LineInfo* LI, const char* L)
                         }
                     } else if (Reg == 'Y') {
                         AM = AM65_ABSY;
+
+                    } else if (Reg == 'S') {
+                        AM = AM65816_STACK;
                     } else {
                         Error ("ASM code error: syntax error");
                         return 0;

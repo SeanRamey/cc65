@@ -380,12 +380,26 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_A,                                  /* chg */
         OF_SETF                                 /* flags */
     },
+    {   OP65816_PEA,                            /* opcode */
+        "pea",                                  /* mnemonic */
+        0,                                      /* size */
+        REG_NONE,                               /* use */
+        REG_NONE,                               /* chg */
+        OF_NONE                                 /* flags */
+    },
     {   OP65_PHA,                               /* opcode */
         "pha",                                  /* mnemonic */
         1,                                      /* size */
         REG_A,                                  /* use */
         REG_NONE,                               /* chg */
         OF_NONE                                 /* flags */
+    },
+    {   OP65816_PHB,                            /* opcode */
+        "phb",                                  /* mnemonic */
+        1,                                      /* size */
+        REG_B,                                  /* use */
+        REG_NONE,                               /* chg */
+        OF_NONE,                                /* flags */
     },
     {   OP65_PHP,                               /* opcode */
         "php",                                  /* mnemonic */
@@ -435,6 +449,14 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_NONE,                               /* use */
         REG_Y,                                  /* chg */
         OF_SETF                                 /* flags */
+    },
+    {
+        OP65816_REP,                            /* opcode */
+        "rep",                                  /* mnemonic */
+        0,                                      /* size */
+        REG_NONE,                               /* use */
+        REG_NONE,                               /* chg: FIXME: wrong ? */
+        OF_SETF,                                /* flags */
     },
     {   OP65_ROL,                               /* opcode */
         "rol",                                  /* mnemonic */
@@ -494,6 +516,14 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_NONE,                               /* use */
         REG_NONE,                               /* chg */
         OF_NONE                                 /* flags */
+    },
+    {
+        OP65816_SEP,                            /* opcode */
+        "sep",                                  /* mnemonic */
+        0,                                      /* size */
+        REG_NONE,                               /* use */
+        REG_NONE,                               /* chg: FIXME: wrong ? */
+        OF_SETF,                                /* flags */
     },
     {   OP65_STA,                               /* opcode */
         "sta",                                  /* mnemonic */
@@ -579,6 +609,13 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_A,                                  /* chg */
         OF_XFR | OF_SETF                        /* flags */
     },
+    {   OP65816_XBA,                            /* opcode */
+        "xba",                                  /* mnemonic */
+        1,                                      /* size */
+        REG_B | REG_A,                          /* use */
+        REG_A | REG_B,                          /* chg */
+        OF_XFR | OF_SETF                        /* flags */
+    }
 };
 
 
@@ -648,6 +685,8 @@ unsigned GetInsnSize (opc_t OPC, am_t AM)
         case AM65_ZPX_IND: return 2;
         case AM65_ZP_INDY: return 2;
         case AM65_ZP_IND:  return 2;
+        case AM65816_STACK: return 1;
+        case AM65816_STACKY: return 1;
         default:
             Internal ("Invalid addressing mode");
             return 0;

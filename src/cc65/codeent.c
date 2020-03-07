@@ -1463,6 +1463,16 @@ void CE_Output (const CodeEntry* E)
             Chars += WriteOutput ("%*s%s", Space, "", Target);
             break;
 
+        case AM65816_STACK:
+            /* stack, s */
+            Chars += WriteOutput ("%*s%s,s", Space, "", E->Arg);
+            break;
+
+        case AM65816_STACKY:
+            /* (stack, s), y */
+            Chars += WriteOutput ("%*s(%s,s),y", Space, "", E->Arg);
+            break;
+
         default:
             Internal ("Invalid addressing mode");
 

@@ -97,7 +97,9 @@ typedef enum {
     OP65_LSR,
     OP65_NOP,
     OP65_ORA,
+    OP65816_PEA,
     OP65_PHA,
+    OP65816_PHB,
     OP65_PHP,
     OP65_PHX,
     OP65_PHY,
@@ -105,6 +107,7 @@ typedef enum {
     OP65_PLP,
     OP65_PLX,
     OP65_PLY,
+    OP65816_REP,
     OP65_ROL,
     OP65_ROR,
     OP65_RTI,
@@ -113,6 +116,7 @@ typedef enum {
     OP65_SEC,
     OP65_SED,
     OP65_SEI,
+    OP65816_SEP,
     OP65_STA,
     OP65_STX,
     OP65_STY,
@@ -125,6 +129,7 @@ typedef enum {
     OP65_TXA,
     OP65_TXS,
     OP65_TYA,
+    OP65816_XBA,
 
     /* Number of opcodes available */
     OP65_COUNT
@@ -144,7 +149,9 @@ typedef enum {
     AM65_ZPX_IND,               /* (zeropage,x) */
     AM65_ZP_INDY,               /* (zeropage),y */
     AM65_ZP_IND,                /* (zeropage) */
-    AM65_BRA                    /* branch */
+    AM65_BRA,                   /* branch */
+    AM65816_STACK,              /* stack, s */
+    AM65816_STACKY,             /* (stack),y */
 } am_t;
 
 /* Branch conditions */

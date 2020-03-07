@@ -73,6 +73,7 @@ struct RegContents;
 #define REG_SAVE_HI     0x0800U
 #define REG_SP_LO       0x1000U
 #define REG_SP_HI       0x2000U
+#define REG_B           0x4000U
 
 
 /* Combined register defines */
