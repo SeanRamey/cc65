@@ -2863,7 +2863,30 @@ void g_add (unsigned flags, unsigned long val)
 /* Primary = TOS + Primary */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        if (flags & CF_CONST) {
+            /* load constant into pimary */
+            g_getimmed(flags, val, 0);
+        }
+
+        switch (flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                assert(0);
+                break;
+            case CF_INT:
+                AddCodeLine("clc");
+                AddCodeLine("adc #$1,s");
+                AddCodeLine("ply"); /* cleanup stack */
+                pop(CF_INT);
+                break;
+            case CF_LONG:
+                assert(0);
+                break;
+            default:
+                typeerror(flags);
+                break;
+        }
+
+        return;
     }
 
     static const char* const ops[4] = {
