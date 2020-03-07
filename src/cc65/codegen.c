@@ -1421,10 +1421,6 @@ static void g_regchar (unsigned Flags)
 void g_regint (unsigned Flags)
 /* Make sure, the value in the primary register an int. Convert if necessary */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
