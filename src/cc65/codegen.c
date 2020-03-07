@@ -1198,15 +1198,16 @@ void g_putstatic (unsigned flags, uintptr_t label, long offs)
 void g_putlocal (unsigned Flags, int Offs, long Val)
 /* Put data into local object. */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     Offs -= StackPtr;
     CheckLocalOffs (Offs);
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (Flags & CF_CONST) {
                 AddCodeLine ("lda #$%02X", (unsigned char) Val);
             }
@@ -1215,6 +1216,15 @@ void g_putlocal (unsigned Flags, int Offs, long Val)
             break;
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                if (Flags & CF_CONST) {
+                    /* load into A */
+                    g_getimmed(Flags, Val, 0);
+                }
+                AddCodeLine("sta $%02x,s", Offs + 1);
+                break;
+            }
+
             if (Flags & CF_CONST) {
                 AddCodeLine ("ldy #$%02X", Offs+1);
                 AddCodeLine ("lda #$%02X", (unsigned char) (Val >> 8));
@@ -1246,6 +1256,11 @@ void g_putlocal (unsigned Flags, int Offs, long Val)
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (Flags & CF_CONST) {
                 g_getimmed (Flags, Val, 0);
             }
