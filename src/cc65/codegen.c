@@ -4008,10 +4008,6 @@ void g_eq (unsigned flags, unsigned long val)
 void g_ne (unsigned flags, unsigned long val)
 /* Test for not equal */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     static const char* const ops[4] = {
         "tosneax", "tosneax", "tosneeax", "tosneeax"
     };
@@ -4027,6 +4023,23 @@ void g_ne (unsigned flags, unsigned long val)
 
             case CF_CHAR:
                 if (flags & CF_FORCECHAR) {
+                    if (CPU == CPU_65816) {
+                        /* TODO: actually emit calls to makebool.s since this will
+                         * generate _a lot_ of duplicate code, but this is easier
+                         * since we can't actually build libruntime */
+                        unsigned int l = GetLocalLabel();
+                        unsigned int l2 = GetLocalLabel();
+
+                        AddCodeLine("cmp #$%02x", (uint8_t)val);
+                        AddCodeLine("bne %s", LocalLabelName(l));
+                        AddCodeLine("lda #$0000");
+                        AddCodeLine("bra %s", LocalLabelName(l2));
+                        g_defcodelabel(l);
+                        AddCodeLine("lda #$0001");
+                        g_defcodelabel(l2);
+                        return;
+                    };
+
                     AddCodeLine ("cmp #$%02X", (unsigned char)val);
                     AddCodeLine ("jsr boolne");
                     return;
@@ -4034,6 +4047,11 @@ void g_ne (unsigned flags, unsigned long val)
                 /* FALLTHROUGH */
 
             case CF_INT:
+                if (CPU == CPU_65816) {
+                    assert(0);
+                    break;
+                }
+
                 L = GetLocalLabel();
                 AddCodeLine ("cpx #$%02X", (unsigned char)(val >> 8));
                 AddCodeLine ("bne %s", LocalLabelName (L));
@@ -4043,6 +4061,10 @@ void g_ne (unsigned flags, unsigned long val)
                 return;
 
             case CF_LONG:
+                if (CPU == CPU_65816) {
+                    assert(0);
+                    break;
+                }
                 break;
 
             default:
