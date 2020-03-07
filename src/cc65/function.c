@@ -35,6 +35,7 @@
 
 /* common */
 #include "check.h"
+#include "cpu.h"
 #include "xmalloc.h"
 
 /* cc65 */
@@ -380,6 +381,7 @@ void NewFunc (SymEntry* Func)
 {
     int         C99MainFunc = 0;/* Flag for C99 main function returning int */
     SymEntry*   Param;
+    unsigned int pushed_fastcall_flags = 0;
 
     /* Get the function descriptor from the function entry */
     FuncDesc* D = Func->V.F.Func;
@@ -478,6 +480,12 @@ void NewFunc (SymEntry* Func)
             Flags = TypeOf (D->LastParam->Type) | CF_FORCECHAR;
         }
         g_push (Flags, 0);
+        pushed_fastcall_flags = Flags;
+
+        if (CPU == CPU_65816) {
+            /* fixup the offset, otherwise this points to the return address on the stack */
+            D->LastParam->V.Offs = 0;
+        }
     }
 
     /* Generate function entry code if needed */
@@ -564,6 +572,12 @@ void NewFunc (SymEntry* Func)
     F_RestoreRegVars (CurrentFunc);
 
     /* Generate the exit code */
+    if (pushed_fastcall_flags != 0) {
+        if (CPU == CPU_65816) {
+            /* account for the pushed fastcall value */
+            StackPtr -= sizeofarg(pushed_fastcall_flags);
+        }
+    }
     g_leave ();
 
     /* Emit references to imports/exports */

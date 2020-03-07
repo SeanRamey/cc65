@@ -39,6 +39,7 @@
 
 /* common */
 #include "addrsize.h"
+#include "cpu.h"
 #include "mmodel.h"
 #include "xmalloc.h"
 
@@ -1368,6 +1369,11 @@ static FuncDesc* ParseFuncDecl (void)
     ** there's one additional byte (the arg size).
     */
     Offs = (F->Flags & FD_VARIADIC)? 1 : 0;
+
+    if (CPU == CPU_65816) {
+        /* there is a return address on the stack, so adjust Offs to account for it */
+        Offs += 2;
+    }
     Sym = F->LastParam;
     while (Sym) {
         unsigned Size = CheckedSizeOf (Sym->Type);
