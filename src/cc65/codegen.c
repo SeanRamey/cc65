@@ -1508,10 +1508,6 @@ unsigned g_typeadjust (unsigned lhs, unsigned rhs)
 ** in (e)ax. The return value is the the flags value for the resulting type.
 */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     unsigned ltype, rtype;
     unsigned result;
 
