@@ -830,10 +830,6 @@ void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
 void g_getstatic (unsigned flags, uintptr_t label, long offs)
 /* Fetch an static memory cell into the primary register */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
@@ -841,6 +837,22 @@ void g_getstatic (unsigned flags, uintptr_t label, long offs)
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
+            if (CPU == CPU_65816) {
+                if ((flags & CF_FORCECHAR) || (flags & CF_TEST)) {
+                    AddCodeLine("lda %s", lbuf);
+                } else {
+                    AddCodeLine("lda %s", lbuf);
+                    AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
+                    if ((flags & CF_UNSIGNED) == 0) {
+                        unsigned int l = GetLocalLabel();
+                        AddCodeLine("bpl %s", LocalLabelName (l));
+                        AddCodeLine("eor #$FF00"); /* sign extend if necessary */
+                        g_defcodelabel(l);
+                    }
+                }
+                break;
+            }
+
             if ((flags & CF_FORCECHAR) || (flags & CF_TEST)) {
                 AddCodeLine ("lda %s", lbuf);   /* load A from the label */
             } else {
@@ -857,6 +869,11 @@ void g_getstatic (unsigned flags, uintptr_t label, long offs)
             break;
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                AddCodeLine("lda %s", lbuf);
+                break;
+            }
+
             AddCodeLine ("lda %s", lbuf);
             if (flags & CF_TEST) {
                 AddCodeLine ("ora %s+1", lbuf);
@@ -866,6 +883,17 @@ void g_getstatic (unsigned flags, uintptr_t label, long offs)
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                if (flags & CF_TEST) {
+                    AddCodeLine("lda %s+1", lbuf);
+                    AddCodeLine("ora %s", lbuf);
+                } else {
+                    AddCodeLine("lda %s", lbuf);
+                    AddCodeLine("ldx %s + 1", lbuf);
+                }
+                break;
+            }
+
             if (flags & CF_TEST) {
                 AddCodeLine ("lda %s+3", lbuf);
                 AddCodeLine ("ora %s+2", lbuf);
