@@ -319,6 +319,11 @@ static unsigned MakeByteOffs (unsigned Flags, unsigned Offs)
 ** offset fits into an index register. Return the remaining offset.
 */
 {
+    if (CPU == CPU_65816) {
+        /* we have no problem with 16-bit offsets */
+        return Offs;
+    }
+
     /* If the offset is too large for a byte register, add the high byte
     ** of the offset to the primary. Beware: We need a special correction
     ** if the offset in the low byte will overflow in the operation.
