@@ -2642,7 +2642,17 @@ void g_call (unsigned Flags, const char* Label, unsigned ArgSize)
 /* Call the specified subroutine name */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        printf("%s(Flags = %#x, Label = %s, ArgSize = %#x)\n", __func__, Flags, Label, ArgSize);
+        if ((Flags & CF_FIXARGC) == 0) {
+            assert(0);
+        }
+
+        AddCodeLine("jsr _%s", Label);
+
+        g_drop(ArgSize);
+        StackPtr += ArgSize;
+
+        return;
     }
 
     if ((Flags & CF_FIXARGC) == 0) {
