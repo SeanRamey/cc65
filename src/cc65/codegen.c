@@ -272,7 +272,11 @@ unsigned sizeofarg (unsigned flags)
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
-            return (flags & CF_FORCECHAR)? 1 : 2;
+            if (CPU == CPU_65816) {
+                return 2;
+            } else {
+                return (flags & CF_FORCECHAR)? 1 : 2;
+            }
 
         case CF_INT:
             return 2;
