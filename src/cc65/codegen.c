@@ -2681,7 +2681,7 @@ void g_drop (unsigned Space)
         }
 
         /* TODO: implement more efficiently for large @Space */
-        for (int i = 0; i < Space; i += 2) {
+        for (unsigned int i = 0; i < Space; i += 2) {
             /* XXX: assumes that Y is unimportant */
             AddCodeLine("ply");
         }
