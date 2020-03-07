@@ -931,11 +931,11 @@ void g_getlocal (unsigned Flags, int Offs)
                     AddCodeLine("and #$00ff");
                 } else {
                     AddCodeLine("lda $%02x,s", Offs + 1);
+                    AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
 
                     if ((Flags & CF_UNSIGNED) == 0) {
                         /* sign-extend */
                         unsigned int l = GetLocalLabel();
-                        AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
                         AddCodeLine("bpl %s", LocalLabelName (l));
                         AddCodeLine("eor #$FF00"); /* sign extend if necessary */
                         g_defcodelabel(l);
