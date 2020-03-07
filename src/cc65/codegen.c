@@ -180,11 +180,21 @@ void g_preamble (void)
     AddTextLine ("\t.debuginfo\t%s", (DebugInfo != 0)? "on" : "off");
 
     /* Import zero page variables */
-    AddTextLine ("\t.importzp\tsp, sreg, regsave, regbank");
-    AddTextLine ("\t.importzp\ttmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4");
+    if (CPU == CPU_65816) {
+
+    } else {
+        AddTextLine ("\t.importzp\tsp, sreg, regsave, regbank");
+        AddTextLine ("\t.importzp\ttmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4");
+    }
 
     /* Define long branch macros */
     AddTextLine ("\t.macpack\tlongbranch");
+
+    if (CPU == CPU_65816) {
+        AddTextLine(".P816");
+        AddTextLine(".A16");
+        AddTextLine(".I16");
+    }
 }
 
 
