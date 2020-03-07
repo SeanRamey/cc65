@@ -2462,7 +2462,36 @@ void g_push (unsigned flags, unsigned long val)
 /* Push the primary register or a constant value onto the stack */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        if (flags & CF_CONST && (flags & CF_TYPEMASK) != CF_LONG) {
+            /* constant 8 or 16 bit value */
+            AddCodeLine("pea $%04x", (uint16_t) val);
+        } else {
+            /* value is not 16/8 bit or not constant */
+
+            if (flags & CF_CONST) {
+                /* constant 32 value: load into primary register */
+                g_getimmed(flags, val, 0);
+            }
+
+            /* push primary register */
+            switch (flags & CF_TYPEMASK) {
+                case CF_CHAR:
+                    /* fall-through: for the stack char (8 bit) is handled as int (16 bit) */
+                case CF_INT:
+                    AddCodeLine("pha");
+                    break;
+                case CF_LONG:
+                    assert(0);
+                    break;
+                default:
+                    typeerror(flags);
+            }
+        }
+
+        /* adjust stack offset */
+        push(flags);
+
+        return;
     }
 
     if (flags & CF_CONST && (flags & CF_TYPEMASK) != CF_LONG) {
