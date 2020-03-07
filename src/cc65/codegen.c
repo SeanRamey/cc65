@@ -1949,6 +1949,10 @@ void g_addeqstatic (unsigned flags, uintptr_t label, long offs,
 void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
 /* Emit += for a local variable */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Calculate the true offset, check it, load it into Y */
     Offs -= StackPtr;
     CheckLocalOffs (Offs);
