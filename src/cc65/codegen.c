@@ -32,7 +32,7 @@
 /*****************************************************************************/
 
 
-
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -124,6 +124,10 @@ static const char* GetLabelName (unsigned Flags, uintptr_t Label, long Offs)
             break;
 
         case CF_REGVAR:
+            if (CPU == CPU_65816) {
+                assert(0);
+            }
+
             /* Variable in register bank */
             xsprintf (Buf, sizeof (Buf), "regbank+%u", (unsigned)((Label+Offs) & 0xFFFF));
             break;
@@ -428,6 +432,10 @@ void g_defimport (const char* Name, int ZP)
 void g_importstartup (void)
 /* Forced import of the startup module */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     AddTextLine ("\t.forceimport\t__STARTUP__");
 }
 
@@ -436,6 +444,10 @@ void g_importstartup (void)
 void g_importmainargs (void)
 /* Forced import of a special symbol that handles arguments to main */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     AddTextLine ("\t.forceimport\tinitmainargs");
 }
 
@@ -458,6 +470,10 @@ static int funcargs;
 void g_enter (unsigned flags, unsigned argsize)
 /* Function prologue */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if ((flags & CF_FIXARGC) != 0) {
         /* Just remember the argument size for the leave */
         funcargs = argsize;
@@ -472,6 +488,10 @@ void g_enter (unsigned flags, unsigned argsize)
 void g_leave (void)
 /* Function epilogue */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* How many bytes of locals do we have to drop? */
     unsigned ToDrop = (unsigned) -StackPtr;
 
@@ -514,6 +534,10 @@ void g_leave (void)
 void g_swap_regvars (int StackOffs, int RegOffs, unsigned Bytes)
 /* Swap a register variable with a location on the stack */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Calculate the actual stack offset and check it */
     StackOffs -= StackPtr;
     CheckLocalOffs (StackOffs);
@@ -551,6 +575,10 @@ void g_swap_regvars (int StackOffs, int RegOffs, unsigned Bytes)
 void g_save_regvars (int RegOffs, unsigned Bytes)
 /* Save register variables */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Don't loop for up to two bytes */
     if (Bytes == 1) {
 
@@ -588,6 +616,10 @@ void g_save_regvars (int RegOffs, unsigned Bytes)
 void g_restore_regvars (int StackOffs, int RegOffs, unsigned Bytes)
 /* Restore register variables */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Calculate the actual stack offset and check it */
     StackOffs -= StackPtr;
     CheckLocalOffs (StackOffs);
@@ -666,6 +698,10 @@ void g_restore_regvars (int StackOffs, int RegOffs, unsigned Bytes)
 void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
 /* Load a constant into the primary register */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned char B1, B2, B3, B4;
     unsigned      Done;
 
@@ -752,6 +788,10 @@ void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
 void g_getstatic (unsigned flags, uintptr_t label, long offs)
 /* Fetch an static memory cell into the primary register */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
@@ -810,6 +850,10 @@ void g_getstatic (unsigned flags, uintptr_t label, long offs)
 void g_getlocal (unsigned Flags, int Offs)
 /* Fetch specified local object (local var). */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     Offs -= StackPtr;
     switch (Flags & CF_TYPEMASK) {
 
@@ -864,6 +908,10 @@ void g_getind (unsigned Flags, unsigned Offs)
 ** into the primary register
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* If the offset is greater than 255, add the part that is > 255 to
     ** the primary. This way we get an easy addition and use the low byte
     ** as the offset
@@ -916,6 +964,10 @@ void g_getind (unsigned Flags, unsigned Offs)
 void g_leasp (int Offs)
 /* Fetch the address of the specified symbol into the primary register */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned char Lo, Hi;
 
     /* Calculate the offset relative to sp */
@@ -982,6 +1034,10 @@ void g_leavariadic (int Offs)
 ** register
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned ArgSizeOffs;
 
     /* Calculate the offset relative to sp */
@@ -1066,6 +1122,10 @@ void g_putstatic (unsigned flags, uintptr_t label, long offs)
 void g_putlocal (unsigned Flags, int Offs, long Val)
 /* Put data into local object. */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     Offs -= StackPtr;
     CheckLocalOffs (Offs);
     switch (Flags & CF_TYPEMASK) {
@@ -1130,6 +1190,10 @@ void g_putind (unsigned Flags, unsigned Offs)
 ** on the top of the stack
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* We can handle offsets below $100 directly, larger offsets must be added
     ** to the address. Since a/x is in use, best code is achieved by adding
     ** just the high byte. Be sure to check if the low byte will overflow while
@@ -1204,6 +1268,10 @@ void g_putind (unsigned Flags, unsigned Offs)
 void g_toslong (unsigned flags)
 /* Make sure, the value on TOS is a long. Convert if necessary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -1229,6 +1297,10 @@ void g_toslong (unsigned flags)
 void g_tosint (unsigned flags)
 /* Make sure, the value on TOS is an int. Convert if necessary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -1250,6 +1322,10 @@ void g_tosint (unsigned flags)
 static void g_regchar (unsigned Flags)
 /* Make sure, the value in the primary register is in the range of char. Truncate if necessary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned L;
 
     AddCodeLine ("ldx #$00");
@@ -1269,6 +1345,10 @@ static void g_regchar (unsigned Flags)
 void g_regint (unsigned Flags)
 /* Make sure, the value in the primary register an int. Convert if necessary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -1292,6 +1372,10 @@ void g_regint (unsigned Flags)
 void g_reglong (unsigned Flags)
 /* Make sure, the value in the primary register a long. Convert if necessary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -1347,6 +1431,10 @@ unsigned g_typeadjust (unsigned lhs, unsigned rhs)
 ** in (e)ax. The return value is the the flags value for the resulting type.
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned ltype, rtype;
     unsigned result;
 
@@ -1444,6 +1532,10 @@ void g_scale (unsigned flags, long val)
 ** pointer points to.
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     int p2;
 
     /* Value may not be zero */
@@ -1559,6 +1651,10 @@ void g_scale (unsigned flags, long val)
 void g_addlocal (unsigned flags, int offs)
 /* Add a local variable to ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned L;
 
     /* Correct the offset and check it */
@@ -1607,6 +1703,10 @@ void g_addlocal (unsigned flags, int offs)
 void g_addstatic (unsigned flags, uintptr_t label, long offs)
 /* Add a static variable to ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned L;
 
     /* Create the correct label name */
@@ -1658,6 +1758,10 @@ void g_addeqstatic (unsigned flags, uintptr_t label, long offs,
                     unsigned long val)
 /* Emit += for a static variable */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
@@ -1841,6 +1945,10 @@ void g_addeqlocal (unsigned flags, int Offs, unsigned long val)
 void g_addeqind (unsigned flags, unsigned offs, unsigned long val)
 /* Emit += for the location with address in ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* If the offset is too large for a byte register, add the high byte
     ** of the offset to the primary. Beware: We need a special correction
     ** if the offset in the low byte will overflow in the operation.
@@ -1881,6 +1989,10 @@ void g_subeqstatic (unsigned flags, uintptr_t label, long offs,
                     unsigned long val)
 /* Emit -= for a static variable */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
@@ -1980,6 +2092,10 @@ void g_subeqstatic (unsigned flags, uintptr_t label, long offs,
 void g_subeqlocal (unsigned flags, int Offs, unsigned long val)
 /* Emit -= for a local variable */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Calculate the true offset, check it, load it into Y */
     Offs -= StackPtr;
     CheckLocalOffs (Offs);
@@ -2037,6 +2153,10 @@ void g_subeqlocal (unsigned flags, int Offs, unsigned long val)
 void g_subeqind (unsigned flags, unsigned offs, unsigned long val)
 /* Emit -= for the location with address in ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* If the offset is too large for a byte register, add the high byte
     ** of the offset to the primary. Beware: We need a special correction
     ** if the offset in the low byte will overflow in the operation.
@@ -2082,6 +2202,10 @@ void g_subeqind (unsigned flags, unsigned offs, unsigned long val)
 void g_addaddr_local (unsigned flags attribute ((unused)), int offs)
 /* Add the address of a local variable to ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned L = 0;
 
     /* Add the offset */
@@ -2116,6 +2240,10 @@ void g_addaddr_local (unsigned flags attribute ((unused)), int offs)
 void g_addaddr_static (unsigned flags, uintptr_t label, long offs)
 /* Add the address of a static variable to ax */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
@@ -2140,6 +2268,10 @@ void g_addaddr_static (unsigned flags, uintptr_t label, long offs)
 void g_save (unsigned flags)
 /* Copy primary register to hold register. */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Check the size and determine operation */
     switch (flags & CF_TYPEMASK) {
 
@@ -2169,6 +2301,10 @@ void g_save (unsigned flags)
 void g_restore (unsigned flags)
 /* Copy hold register to primary. */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Check the size and determine operation */
     switch (flags & CF_TYPEMASK) {
 
@@ -2200,6 +2336,10 @@ void g_cmp (unsigned flags, unsigned long val)
 ** will be set.
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned L;
 
     /* Check the size and determine operation */
@@ -2239,6 +2379,10 @@ static void oper (unsigned Flags, unsigned long Val, const char* const* Subs)
 **      3       --> Operate on unsigned longs
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Determine the offset into the array */
     if (Flags & CF_UNSIGNED) {
         ++Subs;
@@ -2265,6 +2409,10 @@ static void oper (unsigned Flags, unsigned long Val, const char* const* Subs)
 void g_test (unsigned flags)
 /* Test the value in the primary and set the condition codes */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -2298,6 +2446,10 @@ void g_test (unsigned flags)
 void g_push (unsigned flags, unsigned long val)
 /* Push the primary register or a constant value onto the stack */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if (flags & CF_CONST && (flags & CF_TYPEMASK) != CF_LONG) {
 
         /* We have a constant 8 or 16 bit value */
@@ -2358,6 +2510,10 @@ void g_swap (unsigned flags)
 ** of *both* values (must have same size).
 */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -2380,6 +2536,10 @@ void g_swap (unsigned flags)
 void g_call (unsigned Flags, const char* Label, unsigned ArgSize)
 /* Call the specified subroutine name */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if ((Flags & CF_FIXARGC) == 0) {
         /* Pass the argument count */
         AddCodeLine ("ldy #$%02X", ArgSize);
@@ -2393,6 +2553,10 @@ void g_call (unsigned Flags, const char* Label, unsigned ArgSize)
 void g_callind (unsigned Flags, unsigned ArgSize, int Offs)
 /* Call subroutine indirect */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if ((Flags & CF_LOCAL) == 0) {
         /* Address is in a/x */
         if ((Flags & CF_FIXARGC) == 0) {
@@ -2447,6 +2611,10 @@ void g_falsejump (unsigned flags attribute ((unused)), unsigned label)
 void g_lateadjustSP (unsigned label)
 /* Adjust stack based on non-immediate data */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     AddCodeLine ("pha");
     AddCodeLine ("lda %s", LocalLabelName (label));
     AddCodeLine ("clc");
@@ -2461,6 +2629,10 @@ void g_lateadjustSP (unsigned label)
 void g_drop (unsigned Space)
 /* Drop space allocated on the stack */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if (Space > 255) {
         /* Inline the code since calling addysp repeatedly is quite some
         ** overhead.
@@ -2487,6 +2659,10 @@ void g_drop (unsigned Space)
 void g_space (int Space)
 /* Create or drop space on the stack */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if (Space < 0) {
         /* This is actually a drop operation */
         g_drop (-Space);
@@ -2516,6 +2692,10 @@ void g_space (int Space)
 void g_cstackcheck (void)
 /* Check for a C stack overflow */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     AddCodeLine ("jsr cstkchk");
 }
 
@@ -2524,6 +2704,10 @@ void g_cstackcheck (void)
 void g_stackcheck (void)
 /* Check for a stack overflow */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     AddCodeLine ("jsr stkchk");
 }
 
@@ -2532,6 +2716,10 @@ void g_stackcheck (void)
 void g_add (unsigned flags, unsigned long val)
 /* Primary = TOS + Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosaddax", "tosaddax", "tosaddeax", "tosaddeax"
     };
@@ -2548,6 +2736,10 @@ void g_add (unsigned flags, unsigned long val)
 void g_sub (unsigned flags, unsigned long val)
 /* Primary = TOS - Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tossubax", "tossubax", "tossubeax", "tossubeax"
     };
@@ -2564,6 +2756,10 @@ void g_sub (unsigned flags, unsigned long val)
 void g_rsub (unsigned flags, unsigned long val)
 /* Primary = Primary - TOS */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosrsubax", "tosrsubax", "tosrsubeax", "tosrsubeax"
     };
@@ -2575,6 +2771,10 @@ void g_rsub (unsigned flags, unsigned long val)
 void g_mul (unsigned flags, unsigned long val)
 /* Primary = TOS * Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosmulax", "tosumulax", "tosmuleax", "tosumuleax"
     };
@@ -2682,6 +2882,10 @@ void g_mul (unsigned flags, unsigned long val)
 void g_div (unsigned flags, unsigned long val)
 /* Primary = TOS / Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosdivax", "tosudivax", "tosdiveax", "tosudiveax"
     };
@@ -2707,6 +2911,10 @@ void g_div (unsigned flags, unsigned long val)
 void g_mod (unsigned flags, unsigned long val)
 /* Primary = TOS % Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosmodax", "tosumodax", "tosmodeax", "tosumodeax"
     };
@@ -2732,6 +2940,10 @@ void g_mod (unsigned flags, unsigned long val)
 void g_or (unsigned flags, unsigned long val)
 /* Primary = TOS | Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosorax", "tosorax", "tosoreax", "tosoreax"
     };
@@ -2802,6 +3014,10 @@ void g_or (unsigned flags, unsigned long val)
 void g_xor (unsigned flags, unsigned long val)
 /* Primary = TOS ^ Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosxorax", "tosxorax", "tosxoreax", "tosxoreax"
     };
@@ -2870,6 +3086,10 @@ void g_xor (unsigned flags, unsigned long val)
 void g_and (unsigned Flags, unsigned long Val)
 /* Primary = TOS & Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosandax", "tosandax", "tosandeax", "tosandeax"
     };
@@ -2962,6 +3182,10 @@ void g_and (unsigned Flags, unsigned long Val)
 void g_asr (unsigned flags, unsigned long val)
 /* Primary = TOS >> Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosasrax", "tosshrax", "tosasreax", "tosshreax"
     };
@@ -3093,6 +3317,10 @@ void g_asr (unsigned flags, unsigned long val)
 void g_asl (unsigned flags, unsigned long val)
 /* Primary = TOS << Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosaslax", "tosshlax", "tosasleax", "tosshleax"
     };
@@ -3192,6 +3420,10 @@ void g_asl (unsigned flags, unsigned long val)
 void g_neg (unsigned Flags)
 /* Primary = -Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -3221,6 +3453,10 @@ void g_neg (unsigned Flags)
 void g_bneg (unsigned flags)
 /* Primary = !Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -3245,6 +3481,10 @@ void g_bneg (unsigned flags)
 void g_com (unsigned Flags)
 /* Primary = ~Primary */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     switch (Flags & CF_TYPEMASK) {
 
         case CF_CHAR:
@@ -3272,6 +3512,10 @@ void g_com (unsigned Flags)
 void g_inc (unsigned flags, unsigned long val)
 /* Increment the primary register by a given number */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Don't inc by zero */
     if (val == 0) {
         return;
@@ -3371,6 +3615,10 @@ void g_inc (unsigned flags, unsigned long val)
 void g_dec (unsigned flags, unsigned long val)
 /* Decrement the primary register by a given number */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Don't dec by zero */
     if (val == 0) {
         return;
@@ -3471,6 +3719,10 @@ void g_dec (unsigned flags, unsigned long val)
 void g_eq (unsigned flags, unsigned long val)
 /* Test for equal */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "toseqax", "toseqax", "toseqeax", "toseqeax"
     };
@@ -3525,6 +3777,10 @@ void g_eq (unsigned flags, unsigned long val)
 void g_ne (unsigned flags, unsigned long val)
 /* Test for not equal */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosneax", "tosneax", "tosneeax", "tosneeax"
     };
@@ -3579,6 +3835,10 @@ void g_ne (unsigned flags, unsigned long val)
 void g_lt (unsigned flags, unsigned long val)
 /* Test for less than */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosltax", "tosultax", "toslteax", "tosulteax"
     };
@@ -3741,6 +4001,10 @@ void g_lt (unsigned flags, unsigned long val)
 void g_le (unsigned flags, unsigned long val)
 /* Test for less than or equal to */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosleax", "tosuleax", "tosleeax", "tosuleeax"
     };
@@ -3856,6 +4120,10 @@ void g_le (unsigned flags, unsigned long val)
 void g_gt (unsigned flags, unsigned long val)
 /* Test for greater than */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosgtax", "tosugtax", "tosgteax", "tosugteax"
     };
@@ -3987,6 +4255,10 @@ void g_gt (unsigned flags, unsigned long val)
 void g_ge (unsigned flags, unsigned long val)
 /* Test for greater than or equal to */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     static const char* const ops[4] = {
         "tosgeax", "tosugeax", "tosgeeax", "tosugeeax"
     };
@@ -4244,6 +4516,10 @@ void g_zerobytes (unsigned Count)
 void g_initregister (unsigned Label, unsigned Reg, unsigned Size)
 /* Initialize a register variable from static initialization data */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     /* Register variables do always have less than 128 bytes */
     unsigned CodeLabel = GetLocalLabel ();
     AddCodeLine ("ldx #$%02X", (unsigned char) (Size - 1));
@@ -4259,6 +4535,10 @@ void g_initregister (unsigned Label, unsigned Reg, unsigned Size)
 void g_initauto (unsigned Label, unsigned Size)
 /* Initialize a local variable at stack offset zero from static data */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned CodeLabel = GetLocalLabel ();
 
     CheckLocalOffs (Size);
@@ -4285,6 +4565,10 @@ void g_initauto (unsigned Label, unsigned Size)
 void g_initstatic (unsigned InitLabel, unsigned VarLabel, unsigned Size)
 /* Initialize a static local variable from static initialization data */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     if (Size <= 128) {
         unsigned CodeLabel = GetLocalLabel ();
         AddCodeLine ("ldy #$%02X", Size-1);
@@ -4324,6 +4608,10 @@ void g_initstatic (unsigned InitLabel, unsigned VarLabel, unsigned Size)
 void g_switch (Collection* Nodes, unsigned DefaultLabel, unsigned Depth)
 /* Generate code for a switch statement */
 {
+    if (CPU == CPU_65816) {
+        assert(0);
+    }
+
     unsigned NextLabel = 0;
     unsigned I;
 
