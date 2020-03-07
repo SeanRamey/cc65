@@ -724,7 +724,6 @@ void g_getimmed (unsigned Flags, unsigned long Val, long Offs)
                     }
 
                     /* fall-through*/
-                    ;;
                 case CF_INT:
                     AddCodeLine("lda #$%04X", (uint16_t) Val);
                     break;
