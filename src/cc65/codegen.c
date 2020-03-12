@@ -2665,12 +2665,16 @@ void g_test (unsigned flags)
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
-            if (flags & CF_FORCECHAR) {
-                if (CPU == CPU_65816) {
-                    assert(0);
-                    break;
+            if (CPU == CPU_65816) {
+                if (flags & CF_FORCECHAR) {
+                    AddCodeLine("and #$00FF");
                 }
 
+                AddCodeLine("cmp #$0000");
+                break;
+            }
+
+            if (flags & CF_FORCECHAR) {
                 AddCodeLine ("tax");
                 break;
             }
