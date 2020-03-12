@@ -2615,25 +2615,36 @@ static void oper (unsigned Flags, unsigned long Val, const char* const* Subs)
 void g_test (unsigned flags)
 /* Test the value in the primary and set the condition codes */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
             if (flags & CF_FORCECHAR) {
+                if (CPU == CPU_65816) {
+                    assert(0);
+                    break;
+                }
+
                 AddCodeLine ("tax");
                 break;
             }
             /* FALLTHROUGH */
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                AddCodeLine("cmp #$0000");
+                break;
+            }
+
             AddCodeLine ("stx tmp1");
             AddCodeLine ("ora tmp1");
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                assert(0);
+                break;
+            }
+
             if (flags & CF_UNSIGNED) {
                 AddCodeLine ("jsr utsteax");
             } else {
