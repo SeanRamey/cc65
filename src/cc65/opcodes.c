@@ -567,6 +567,13 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_Y,                                  /* chg */
         OF_XFR | OF_SETF                        /* flags */
     },
+    {   OP65816_TCS,                            /* opcode */
+        "tcs",                                  /* mnemonic */
+        1,                                      /* size */
+        REG_NONE,                               /* use */
+        REG_A,                                  /* chg */
+        OF_XFR | OF_SETF                        /* flags */
+    },
     {   OP65_TRB,                               /* opcode */
         "trb",                                  /* mnemonic */
         0,                                      /* size */
@@ -580,6 +587,13 @@ const OPCDesc OPCTable[OP65_COUNT] = {
         REG_A,                                  /* use */
         REG_NONE,                               /* chg */
         OF_SETF                                 /* flags */
+    },
+    {   OP65816_TSC,                            /* opcode */
+        "tsc",                                  /* mnemonic */
+        1,                                      /* size */
+        REG_A,                                  /* use */
+        REG_NONE,                               /* chg */
+        OF_XFR                                  /* flags */
     },
     {   OP65_TSX,                               /* opcode */
         "tsx",                                  /* mnemonic */
