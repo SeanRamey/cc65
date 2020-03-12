@@ -838,8 +838,13 @@ void g_getstatic (unsigned flags, uintptr_t label, long offs)
 
         case CF_CHAR:
             if (CPU == CPU_65816) {
-                if ((flags & CF_FORCECHAR) || (flags & CF_TEST)) {
+                if (flags & CF_FORCECHAR) {
+                    /* 8-bit load, this is important for hardware io */
+                    AddCodeLine("sep #$20");
+                    AddTextLine("\t.A8");
                     AddCodeLine("lda %s", lbuf);
+                    AddTextLine("\t.A16");
+                    AddCodeLine("rep #$20");
                 } else {
                     AddCodeLine("lda %s", lbuf);
                     AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
