@@ -1401,7 +1401,31 @@ void g_putind (unsigned Flags, unsigned Offs)
 */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        AddCodeLine("ldy #$%04x", Offs);
+        switch (Flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                assert(0);
+                break;
+            case CF_INT:
+                AddCodeLine("sta ($1,s),y");
+                break;
+            case CF_LONG:
+                AddCodeLine("sta ($1,s),y");
+                AddCodeLine("iny");
+                AddCodeLine("pha");
+                AddCodeLine("txa");
+                AddCodeLine("sta ($3,s),y");
+                AddCodeLine("pla");
+                break;
+            default:
+                typeerror(Flags);
+        }
+
+        /* fixup stack */
+        AddCodeLine("ply");
+        pop (CF_PTR);
+
+        return;
     }
 
     /* We can handle offsets below $100 directly, larger offsets must be added
