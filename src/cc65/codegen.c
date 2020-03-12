@@ -1282,7 +1282,15 @@ void g_putlocal (unsigned Flags, int Offs, long Val)
 
         case CF_CHAR:
             if (CPU == CPU_65816) {
-                assert(0);
+                /* 8-bit accumulator */
+                AddCodeLine("sep #$20");
+                AddTextLine("\t.A8");
+                if (Flags & CF_CONST) {
+                    AddCodeLine("lda #%02x", (uint8_t)Val);
+                }
+                AddCodeLine("sta $%02x,s", Offs + 1);
+                AddTextLine("\t.A16");
+                AddCodeLine("rep #$20");
                 break;
             }
 
