@@ -429,6 +429,14 @@ static void ParseStorageClass (DeclSpec* D, unsigned DefStorage)
             break;
 
         case TOK_REGISTER:
+            if (CPU == CPU_65816) {
+                /* we ignore the register keyword */
+                // D->StorageClass = SC_STATIC;
+                D->Flags |= DS_DEF_STORAGE;
+                D->StorageClass = DefStorage;
+                NextToken();
+                break;
+            }
             D->StorageClass = SC_REGISTER | SC_STATIC;
             NextToken ();
             break;
