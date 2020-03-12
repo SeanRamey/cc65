@@ -1476,7 +1476,15 @@ static void g_regchar (unsigned Flags)
 /* Make sure, the value in the primary register is in the range of char. Truncate if necessary */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        AddCodeLine("and #$00FF"); /* set upper 8 bits to zero */
+        if ((Flags & CF_UNSIGNED) == 0) {
+            unsigned int l = GetLocalLabel();
+            AddCodeLine("bpl %s", LocalLabelName (l));
+            AddCodeLine("eor #$FF00"); /* sign extend if necessary */
+            g_defcodelabel(l);
+        }
+
+        return;
     }
 
     unsigned L;
