@@ -289,6 +289,10 @@ static void SetSys (const char* Sys)
             cbmsys ("__CX16__");
             break;
 
+        case TGT_MY65816:
+            DefineNumericMacro("__MY65816__", 1);
+            break;
+
         default:
             AbEnd ("Unknown target system type %d", Target);
     }

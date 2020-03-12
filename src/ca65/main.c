@@ -334,6 +334,10 @@ static void SetSys (const char* Sys)
             CBMSystem ("__CX16__");
             break;
 
+        case TGT_MY65816:
+            NewSymbol("__MY65816", 1);
+            break;
+
         default:
             AbEnd ("Invalid target name: '%s'", Sys);
 
