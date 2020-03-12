@@ -1227,15 +1227,36 @@ void g_putstatic (unsigned flags, uintptr_t label, long offs)
     switch (flags & CF_TYPEMASK) {
 
         case CF_CHAR:
+            if (CPU == CPU_65816) {
+                /* 8-bit store, this is important for hardware io */
+                AddCodeLine("sep #$20");
+                AddTextLine("\t.A8");
+                AddCodeLine("sta %s", lbuf);
+                AddTextLine("\t.A16");
+                AddCodeLine("rep #$20");
+                break;
+            }
+
             AddCodeLine ("sta %s", lbuf);
             break;
 
         case CF_INT:
+            if (CPU == CPU_65816) {
+                AddCodeLine("sta %s", lbuf);
+                break;
+            }
+
             AddCodeLine ("sta %s", lbuf);
             AddCodeLine ("stx %s+1", lbuf);
             break;
 
         case CF_LONG:
+            if (CPU == CPU_65816) {
+                AddCodeLine("sta %s", lbuf);
+                AddCodeLine("stx %s+1", lbuf);
+                break;
+            }
+
             AddCodeLine ("sta %s", lbuf);
             AddCodeLine ("stx %s+1", lbuf);
             AddCodeLine ("ldy sreg");
