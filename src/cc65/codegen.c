@@ -3472,7 +3472,29 @@ void g_and (unsigned Flags, unsigned long Val)
 /* Primary = TOS & Primary */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        switch (Flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                assert(0);
+                break;
+            case CF_INT:
+                if (Flags & CF_CONST) {
+                    AddCodeLine("and #$%04x", (uint16_t)Val);
+                } else {
+                    AddCodeLine("sec");
+                    AddCodeLine("and $1,s");
+                    AddCodeLine("ply"); /* cleanup stack */
+                    pop(CF_INT);
+                }
+                break;
+            case CF_LONG:
+                assert(0);
+                break;
+            default:
+                typeerror(Flags);
+                break;
+        }
+
+        return;
     }
 
     static const char* const ops[4] = {
