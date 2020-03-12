@@ -1047,6 +1047,11 @@ void g_getind (unsigned Flags, unsigned Offs)
                     AddCodeLine("eor #$ff00");
                     g_defcodelabel(l);
                 }
+
+                if (Flags & CF_TEST) {
+                    g_test(Flags);
+                }
+
                 break;
             }
 
@@ -1061,7 +1066,15 @@ void g_getind (unsigned Flags, unsigned Offs)
 
         case CF_INT:
             if (CPU == CPU_65816) {
-                assert(0);
+                AddCodeLine("pha");
+                AddCodeLine("ldy #$%04x", Offs);
+                AddCodeLine("lda ($1,s),y");
+                AddCodeLine("ply"); /* cleanup stack */
+
+                if (Flags & CF_TEST) {
+                    g_test(Flags);
+                }
+
                 break;
             }
 
@@ -1080,7 +1093,17 @@ void g_getind (unsigned Flags, unsigned Offs)
 
         case CF_LONG:
             if (CPU == CPU_65816) {
-                assert(0);
+                AddCodeLine("pha");
+                AddCodeLine("ldy #$%04x", Offs + 1);
+                AddCodeLine("lda ($1,s),y");
+                AddCodeLine("tax");
+                AddCodeLine("dey");
+                AddCodeLine("lda ($1,s),y");
+                AddCodeLine("ply"); /* cleanup stack */
+
+                if (Flags & CF_TEST) {
+                    g_test(Flags);
+                }
                 break;
             }
 
