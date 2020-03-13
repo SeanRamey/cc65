@@ -3326,7 +3326,29 @@ void g_or (unsigned flags, unsigned long val)
 /* Primary = TOS | Primary */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        switch (flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                assert(0);
+                break;
+            case CF_INT:
+                if (flags & CF_CONST) {
+                    AddCodeLine("ora #$%04x", (uint16_t)(val & 0xffff));
+                } else {
+                    AddCodeLine("ora $1,s");
+
+                    /* cleanup the stack*/
+                    AddCodeLine("ply");
+                    pop(CF_INT);
+                }
+                break;
+            case CF_LONG:
+                assert(0);
+                break;
+            default:
+                typeerror(flags);
+        }
+
+        return;
     }
 
     static const char* const ops[4] = {
