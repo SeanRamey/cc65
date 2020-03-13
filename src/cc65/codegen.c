@@ -3911,7 +3911,28 @@ void g_com (unsigned Flags)
 /* Primary = ~Primary */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        switch(Flags & CF_TYPEMASK) {
+            case CF_CHAR:
+                if (Flags & CF_FORCECHAR) {
+                    assert(0);
+                }
+                /* fall-through */
+            case CF_INT:
+                AddCodeLine("eor #$FFFF");
+                break;
+            case CF_LONG:
+                AddCodeLine("eor #$FFFF");
+                AddCodeLine("pha");
+                AddCodeLine("txa");
+                AddCodeLine("eor #$FFFF");
+                AddCodeLine("tax");
+                AddCodeLine("pla");
+                break;
+            default:
+                typeerror(Flags);
+        }
+
+        return;
     }
 
     switch (Flags & CF_TYPEMASK) {
