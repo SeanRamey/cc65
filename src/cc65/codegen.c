@@ -2493,14 +2493,15 @@ void g_addaddr_local (unsigned flags attribute ((unused)), int offs)
 void g_addaddr_static (unsigned flags, uintptr_t label, long offs)
 /* Add the address of a static variable to ax */
 {
-    if (CPU == CPU_65816) {
-        assert(0);
-    }
-
     /* Create the correct label name */
     const char* lbuf = GetLabelName (flags, label, offs);
 
     /* Add the address to the current ax value */
+    if (CPU == CPU_65816) {
+        AddCodeLine("clc");
+        AddCodeLine("adc #%s", lbuf);
+        return;
+    }
     AddCodeLine ("clc");
     AddCodeLine ("adc #<(%s)", lbuf);
     AddCodeLine ("tay");
