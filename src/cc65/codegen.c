@@ -2522,7 +2522,20 @@ void g_save (unsigned flags)
 /* Copy primary register to hold register. */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        switch (flags & CF_TYPEMASK) {
+            case CF_CHAR:
+            case CF_INT:
+                AddCodeLine("pha");
+                break;
+            case CF_LONG:
+                AddCodeLine("pha");
+                AddCodeLine("phx");
+                break;
+            default:
+                typerror(flags);
+        }
+
+        return;
     }
 
     /* Check the size and determine operation */
@@ -2555,7 +2568,20 @@ void g_restore (unsigned flags)
 /* Copy hold register to primary. */
 {
     if (CPU == CPU_65816) {
-        assert(0);
+        switch (flags & CF_TYPEMASK) {
+            case CF_CHAR:
+            case CF_INT:
+                AddCodeLine("pla");
+                break;
+            case CF_LONG:
+                AddCodeLine("plx");
+                AddCodeLine("pla");
+                break;
+            default:
+                typerror(flags);
+        }
+
+        return;
     }
 
     /* Check the size and determine operation */
