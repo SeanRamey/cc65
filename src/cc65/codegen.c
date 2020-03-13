@@ -2532,7 +2532,7 @@ void g_save (unsigned flags)
                 AddCodeLine("phx");
                 break;
             default:
-                typerror(flags);
+                typeerror(flags);
         }
 
         return;
@@ -2578,7 +2578,7 @@ void g_restore (unsigned flags)
                 AddCodeLine("pla");
                 break;
             default:
-                typerror(flags);
+                typeerror(flags);
         }
 
         return;
